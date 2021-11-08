@@ -21,7 +21,7 @@
 > ```
 > Опубликуйте созданный форк в своем репозитории и предоставьте ответ в виде ссылки на https://hub.docker.com/username_repo.
 
-[Docker Hub Image](https://hub.docker.com/repository/docker/abeletskiyppr/netology_05_03)
+[Docker Hub Image](https://hub.docker.com/r/abeletskiyppr/netology_05_03)
 
 Пример запуска:
 ```bash
@@ -145,7 +145,7 @@ exit
 > 
 > Соберите Docker образ с Ansible, загрузите на Docker Hub и пришлите ссылку вместе с остальными ответами к задачам.
 
-[Docker Hub Image](https://hub.docker.com/repository/docker/abeletskiyppr/netology_05_03_ansible)
+[Docker Hub Image](https://hub.docker.com/r/abeletskiyppr/netology_05_03_ansible)
 
 Пример запуска:
 ```bash
