@@ -1,0 +1,21 @@
+repos:
+  # атлантис должен работать только для репозиториев в вашем github
+- id: /github\.com\/beletsky\/.*/
+  branch: /.*/
+  workflow: custom
+  allowed_workflows: [custom]
+  # На стороне клиентского конфига разрешите изменять workflow
+  allowed_overrides: [workflow]
+  allow_custom_workflows: true
+
+workflows:
+  custom:
+    plan:
+      steps:
+      - init
+      - plan:
+          # сделайте так, что бы во время планирования не происходил lock состояния
+          extra_args: ["-lock", "false"]
+    apply:
+      steps:
+      - apply

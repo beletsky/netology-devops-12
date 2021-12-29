@@ -1,0 +1,18 @@
+version: 3
+projects:
+- name: project-name-stage
+  dir: .
+  # Надо запускать планирование и аплай для двух воркспейсов stage и prod
+  workspace: stage
+  # Необходимо включить автопланирование при изменении любых файлов *.tf.
+  autoplan:
+    when_modified: ["*.tf", "../modules/**.tf"]
+    enabled: true
+- name: project-name-prod
+  dir: .
+  # Надо запускать планирование и аплай для двух воркспейсов stage и prod
+  workspace: prod
+  # Необходимо включить автопланирование при изменении любых файлов *.tf.
+  autoplan:
+    when_modified: ["*.tf", "../modules/**.tf"]
+    enabled: true
