@@ -1,0 +1,5 @@
+---
+elasticsearch_kibana:
+  hosts:
+    elk:
+      ansible_connection: docker
