@@ -1,0 +1,7 @@
+---
+- name: Test my own module
+  hosts: localhost
+  roles:
+    - role: ppr_ru.learning.create_file
+      path: "/tmp/test.txt"
+      content: "Test content 2"
