@@ -2,3 +2,6 @@
 **/.terraform*
 /set_yc_env.sh
 **/env/
+sonar-scanner-*/
+**/.scannerwork/
+apache-maven-*/
