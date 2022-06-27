@@ -15,12 +15,25 @@
 > 
 > Обоснуйте свой выбор.
 
-Сравним возможности популярных решений создания API Gateway на основе приведённых в условии задачи критериях. Отдельно добавим также критерий "бесплатно", поскольку это может существенно повлиять на выбор.
+Программные решения для создания API Gateway можно разделить на два больших класса: "облачные" (расположенные у сторонних провайдеров: AWS API Gateway, Google Cloud API Gateway, Azure API Management, IBM API Connect) и "self-hosted" (которые располагаются на серверах компании). В предположении, что компания стоит систему преимущественно для внутреннего использования, логично ограничить выбор вторым классом систем.
 
-|Name|URL|Free| File-based configuration | Authentication check | HTTPS Termination |
-|----|---|----|:------------------------:|:--------------------:|:-----------------:|
-| Kong|https://konghq.com/kong/|Y|Y|Y|
-|
+Что касается "облачных" решений, практически все из них обладают всеми необходимыми возможностями, поэтому основным критерием выбора одной из них я бы считал использование других сервисов того же провайдера. Например, если компания размещает сервисы на серверах Amazon, то логично выбрать решение от той же компании: AWS API Gateway.
+
+Ограничиваясь "self-hosted" решениями, сравним возможности популярных API Gateway на основе приведённых в условии задачи критериях. Отдельно добавим также критерий "бесплатно", поскольку это может существенно повлиять на выбор.
+
+| Name                 | URL                                                      |                   Lang                    |              Free              |                       Configuration                       | Authentication check | HTTPS Termination |
+|----------------------|----------------------------------------------------------|:-----------------------------------------:|:------------------------------:|:---------------------------------------------------------:|:--------------------:|:-----------------:|
+| Kong                 | https://konghq.com/kong/                                 |           Lua (on top of Nginx)           |   Y (+ some paid functions)    |               Database (Postges, Cassandra)               |          Y           |         Y         |
+| Tyk.io               | https://tyk.io/                                          |         Go (+ JavaScript plugins)         | Y (but paid for several nodes) | Files, JSON (but API configuration is the preferable way) |          Y           |         Y         |
+| Express Gateway      | https://www.express-gateway.io/                          |                JavaScript                 |               Y                |                        Files, JSON                        |          Y           |         Y         |
+| KrakenD              | https://www.krakend.io/                                  | Go (supports plugings in different langs) |               Y                |            Files, JSON + other similar formats            |       Y (JWT)        |         Y         |
+| Apigee               | https://cloud.google.com/apigee/                         |                   Java                    |               N                |                         API, GUI                          | Y (Limited options)  |         Y         |
+| Axway                | https://www.axway.com/en/products/api-management/gateway |                                           |                     N                     |                                                           |                      |                   |
+| Mulesoft API Manager | https://www.mulesoft.com/                                |                                           |                     N                     |             Files, domain-specific XML, + GUI             |   Y (OAuth2, JWT)    |         Y         |
+
+Как видно из таблицы, практически все основные решения API Gateway поддержтивают все требуемые функции. Поэтому выбор необходимо будет основывать на других характеристиках. Так, например, Kong использует дополнительные сервисы (nginx под капотом, базы данных), Tyk.io становится платным при необходимости масштабирования, Express Gateway написан на JavaScript (что может быть проблемой, если стек языков, используемые в компании не включает этот язык).
+
+Исходя из своих личных предпочтений (никак не связанных с условием задачи, естественно), меня больше всего заинтересовало решение KrakenD, прежде всего благодаря принятому в нём подходу Configuration as a Code, простоте развёртывания (docker-контейнер плюс конфигурация), возможностям его расширения на различных языках.
 
 ## Задача 2: Брокер сообщений
 
@@ -36,3 +49,18 @@
 > 
 > Обоснуйте свой выбор.
 
+Составим таблицу возможностей существующих решений по предложенным критериям. Информацию о производительности решений я взял из исследования [Adam Warski, Evaluating persistent, replicated message queues](https://softwaremill.com/mqperf/).
+
+| Name                     | URL                                 |            Claster support            |      Persistance       |   High speed    |           Message formats            |       User rights       |              Usage simplicity              |
+|--------------------------|-------------------------------------|:-------------------------------------:|:----------------------:|:---------------:|:------------------------------------:|:-----------------------:|:------------------------------------------:|
+| Amazon SQS (cloud-based) | http://aws.amazon.com/sqs           | Yes (under the hood, no setup needed) |          Yes           | Relatively slow |             Proprietary              | Yes (AWS accounts only) |     No install necessary, API calling      |
+| RabbitMQ                 | https://www.rabbitmq.com/           |                  Yes                  |    Yes (file-based)    |      Slow       |          AMPQ, STOMP, MQTT           |           Yes           | Simple, but requires careful configuration |
+| ActiveMQ Artemis         | http://activemq.apache.org/artemis/ |                  Yes                  | Yes (file-based, JDBC) | Relatively fast | AMPQ, OpenWire, MQTT, STOMP, HornetQ |           Yes           |            Relatively difficult            |
+| Redis streams            | https://redis.io/                   |                  Yes                  |    Yes (file-based)    | Relatively slow |             Proprietary              |           No            |                   Simple                   |
+| Apache Pulsar            | https://pulsar.apache.org/          |            Yes (ZooKeeper)            |    Yes (BookKeeper)    |      Fast       |             Proprietary              |           Yes           |                 Difficult                  |
+| RocketMQ                 | https://rocketmq.apache.org/        |                  Yes                  |          Yes           |      Fast       |             Proprietary              |                         |            Relatively difficult            |
+| Kafka                    | https://kafka.apache.org/           |            Yes (ZooKeeper)            |          Yes           |    Very fast    |             Proprietary              |           Yes           |                 Difficult                  |
+
+В отличие от выбора решения для API Gateway, выбор брокера сообщений существенным образом зависит от решаемой задачи. Так, если очередь сообщений используется для приёма больших объёмов часто поступающих данных, то основное внимание необходимо уделить производительности, и Kafka окажется вне конкуренции. Для целей взаимодействия микросервисов между собой, когда поток сообщений небольшой, лучше задействовать RabbitMQ, просто в силу простоты его использования и надёжности. Облачные решения, такие как Amazon SQS, имеет смысл выбирать, когда компоненты системы уже работают на сервисах того же провайдера.
+
+Остальные упомянутые в таблице сервисы (и ещё более редко встречаемые неупомянутые) имеют специфические области использования, и их выбор обычно диктуется конкретной рабочей ситуацией.
