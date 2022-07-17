@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: dev
+  name: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dev
+  template:
+    metadata:
+      labels:
+        app: dev
+    spec:
+      containers:
+      - image: app_frontend
+        imagePullPolicy: Never
+        name: frontend
+      - image: app_backend
+        imagePullPolicy: Never
+        name: backend
