@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: multitool
+  name: multitool
+  namespace: default
+spec:
+  containers:
+    - image: wbitt/network-multitool
+      imagePullPolicy: IfNotPresent
+      name: network-multitool
