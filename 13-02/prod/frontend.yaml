@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: frontend
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: busybox
+          command: ["sleep", "3600"]
+          volumeMounts:
+            - mountPath: "/public/content"
+              name: static-content
+      volumes:
+        - name: static-content
+          persistentVolumeClaim:
+            claimName: static-content
