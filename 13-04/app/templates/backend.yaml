@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "app.backendName" . }}
+  labels:
+    app: {{ include "app.backendLabel" . }}
+  namespace: {{ .Values.namespace }}
+spec:
+  ports:
+  - port: {{ .Values.port.backend }}
+    targetPort: 9000
+  clusterIP: None
+  selector:
+    app: {{ include "app.backendLabel" . }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "app.backendName" . }}
+  labels:
+    app: {{ include "app.backendLabel" . }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.replicaCount.backend }}
+  selector:
+    matchLabels:
+      app: {{ include "app.backendLabel" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "app.backendLabel" . }}
+    spec:
+      initContainers:
+      - name: check-db-ready
+        image: {{ .Values.image.db.image }}
+        command: ['sh', '-c', 'until pg_isready -h {{ include "app.dbName" . }} -p 5432; do echo waiting for database; sleep 2; done;']
+      containers:
+      - name: backend
+        {{- .Values.image.backend | toYaml | nindent 8 }}

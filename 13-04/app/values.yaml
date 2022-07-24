@@ -1,0 +1,34 @@
+# Default values for app.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+namespace: default
+
+# To support running several application instances in the same namespace,
+# we use instance variable to identify each running copy by it.
+# Specify unique identificator for each copy of application.
+instance: ""
+
+# Ports listened by application components.
+port:
+  backend: 9000
+  db: 5432
+  frontend: 80
+
+# Default number of replicas for each application component.
+# NB! Database component is NOT scalable in our application.
+replicaCount:
+  backend: 1
+  frontend: 1
+
+# Images to create containers from.
+image:
+  backend:
+    image: app_backend
+    imagePullPolicy: Never
+  db:
+    image: postgres:13-alpine
+    imagePullPolicy: IfNotPresent
+  frontend:
+    image: app_frontend
+    imagePullPolicy: Never

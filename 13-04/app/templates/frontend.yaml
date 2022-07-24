@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "app.frontendName" . }}
+  labels:
+    app: {{ include "app.frontendLabel" . }}
+  namespace: {{ .Values.namespace }}
+spec:
+  ports:
+  - port: {{ .Values.port.frontend }}
+    targetPort: 80
+  clusterIP: None
+  selector:
+    app: {{ include "app.frontendLabel" . }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "app.frontendName" . }}
+  labels:
+    app: {{ include "app.frontendLabel" . }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.replicaCount.frontend }}
+  selector:
+    matchLabels:
+      app: {{ include "app.frontendLabel" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "app.frontendLabel" . }}
+    spec:
+      containers:
+      - name: frontend
+        {{- .Values.image.frontend | toYaml | nindent 8 }}
+        env:
+        - name: BASE_URL
+          value: http://{{- include "app.backendName" . }}:{{ .Values.port.backend }}

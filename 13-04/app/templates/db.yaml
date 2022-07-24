@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "app.dbName" . }}
+  labels:
+    app: {{ include "app.dbLabel" . }}
+  namespace: {{ .Values.namespace }}
+spec:
+  ports:
+  - port: {{ .Values.port.db }}
+    targetPort: 5432
+  clusterIP: None
+  selector:
+    app: {{ include "app.dbLabel" . }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "app.dbName" . }}
+  labels:
+    app: {{ include "app.dbLabel" . }}
+  namespace: {{ .Values.namespace }}
+spec:
+  serviceName: "{{ include "app.dbName" . }}"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "app.dbLabel" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "app.dbName" . }}
+    spec:
+      containers:
+        - name: db
+          {{- .Values.image.db | toYaml | nindent 10 }}
+          ports:
+          - containerPort: 5432
+          env:
+          - name: POSTGRES_PASSWORD
+            value: postgres
+          - name: POSTGRES_USER
+            value: postgres
+          - name: POSTGRES_DB
+            value: news
