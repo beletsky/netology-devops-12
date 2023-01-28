@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:  
+  - name: nginx
+    image: nginx:latest
+    ports:
+    - containerPort: 80
+      protocol: TCP
+    - containerPort: 443
+      protocol: TCP
+    volumeMounts:
+    - name: certs
+      mountPath: "/etc/nginx/ssl"
+      readOnly: true
+    env:
+      - name: NGINX_UPSTREAM
+        valueFrom:
+          secretKeyRef:
+            name: upstream
+            key: nginx_upstream
+            optional: false
+  volumes:
+  - name: certs
+    secret:
+      secretName: domain-cert
