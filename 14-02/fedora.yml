@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fedora
+spec:
+  containers:  
+  - name: fedora
+    image: fedora:latest
+    command: [ "/bin/bash", "-c", "--" ]
+    args: [ "dnf -y install pip && pip install hvac && python3 /app/vault-test.py" ]
+    volumeMounts:
+    - name: app
+      mountPath: /app
+    env:
+      - name: VAULT_URL
+        valueFrom:
+          secretKeyRef:
+            name: vault
+            key: url
+            optional: false
+      - name: VAULT_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: vault
+            key: token
+            optional: false
+  volumes:
+  - name: app
+    hostPath:
+      path: /netology/14-02/app
+      type: Directory
