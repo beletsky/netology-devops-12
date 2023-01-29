@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fedora
+spec:
+  containers:
+  - name: myapp
+    image: fedora:latest
+    command: [ "/bin/bash", "-c", "--" ]
+    args: [ "trap : TERM INT; sleep infinity & wait" ]
+  serviceAccountName: netology
