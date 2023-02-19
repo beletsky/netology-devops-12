@@ -1,0 +1,14 @@
+#cloud-config
+users:
+  - name: <username>
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh-authorized-keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMms+VofMVXYt1it7nXIgRg5m1zfO0W7nG+uVyjks9e9 abeletsky@gmail.com
+write_files:
+- encoding: b64
+  content: PGh0bWw+CjxoZWFkPgogICAgPHRpdGxlPk5ldG9sb2d5IERldk9wcy0xNSBIb21ld29yayAxNS0wMiBTZXJ2ZXIgMDwvdGl0bGU+CjwvaGVhZD4KPGJvZHk+CiAgICA8Y2VudGVyPgogICAgICAgIDxoMT5OZXRvbG9neSBEZXZPcHMtMTUgSG9tZXdvcmsgMTUtMDIgU2VydmVyIDA8L2gxPgogICAgICAgIDxpbWcgc3JjPSJodHRwczovL3N0b3JhZ2UueWFuZGV4Y2xvdWQubmV0L2FiZWxldHNraXkucHByLnJ1LTIwMjMwMjA1L2xha2UiIC8+CiAgICA8L2NlbnRlcj4KPC9ib2R5Pgo8L2h0bWw+Cg==
+  owner: ubuntu:www-data
+  path: /var/www/html/index.html
+  permissions: "0644"
